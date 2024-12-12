@@ -6,10 +6,12 @@ Assignment:
 #include <stdio.h>
 #include <string.h>
 #define CHEERLEADERS 15
+#define ROW 5
+#define COLUMN 5
 void task1_robot_paths();
 int CalculatePath(int column, int row, int result);
-void task2_human_pyramid(int size);
-float HumanPyramid(float weight[], int size, int column, int row);
+void task2_human_pyramid(int size1, int size2);
+float HumanPyramid(float weight[][COLUMN], int column, int row, int size1, int size2);
 void task3_parenthesis_validator();
 void task4_queens_battle();
 void task5_crossword_generator();
@@ -35,7 +37,7 @@ int main()
                 task1_robot_paths();
                 break;
             case 2:
-                task2_human_pyramid(CHEERLEADERS);
+                task2_human_pyramid(ROW, COLUMN);
                 break;
             case 3:
                 task3_parenthesis_validator();
@@ -86,21 +88,39 @@ int CalculatePath(int column, int row, int result) {
     return CalculatePath(column - 1, row, result + 1);
 }
 
-void task2_human_pyramid(int size)
+void task2_human_pyramid(int size1, int size2)
 {
-    float weight[size] = {0};
+    float weight[size1][size2];
+    float result = 0;
     printf("Please enter the weights of the cheerleaders: \n");
-    for (int i = 0; i < size; i++) {
-        scanf("%f", &weight[i]);
-        if (weight[i] < 0) {
-            printf("Negative weights are not supported.\n");
-            return;
+    for (int i = 0; i < size1; i++) {
+        for (int j = 0; j <= i; j++) {
+            scanf("%f", &weight[i][j]);
+            if (weight[i][j] < 0) {
+                printf("Negative weights are not supported.\n");
+                return;
+            }
         }
+    }
+    for (int i = 0; i < size1; i++) {
+        for (int j = 0; j <= i; j++) {
+            result = HumanPyramid(weight, j, i, size1, size2);
+            printf("%.2f ", result);
+        }
+        printf("\n");
     }
 }
 
-float HumanPyramid(float weight[], int size, int column, int row) {
-
+float HumanPyramid(float weight[][COLUMN], int column, int row, int size1, int size2) {
+    float resultLeft = 0;
+    float resultRight = 0;
+    if (column == 0 && row == 0)
+        return weight[row][column];
+    if (column >= 0 && row < size1 && row > 0)
+        resultLeft =  0.5 * HumanPyramid(weight, column - 1, row - 1, size1, size2);
+    if (column <= row)
+        resultRight = 0.5 * HumanPyramid(weight, column, row - 1, size1, size2);
+    return weight[row][column] + resultLeft + resultRight;
 }
 
 void task3_parenthesis_validator()
