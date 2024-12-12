@@ -13,6 +13,7 @@ int CalculatePath(int column, int row, int result);
 void task2_human_pyramid(int size1, int size2);
 float HumanPyramid(float weight[][COLUMN], int column, int row, int size1, int size2);
 void task3_parenthesis_validator();
+int ParenthesisValidation(char validation, int checkRight, int checkLeft);
 void task4_queens_battle();
 void task5_crossword_generator();
 
@@ -56,10 +57,10 @@ int main()
                 break;
             }
         }
-        // else
-        // {
-        //     scanf("%*s");
-        // }
+        else
+        {
+            scanf("%*s");
+        }
 
     } while (task != 6);
 }
@@ -67,7 +68,7 @@ int main()
 void task1_robot_paths()
 {
     int column, row;
-    int result = 0;
+    int result = 1;
     printf("Please enter the coordinates of the robot (column, row):\n");
     scanf("%d%d", &column, &row);
     if (column < 0 || row < 0) {
@@ -125,8 +126,31 @@ float HumanPyramid(float weight[][COLUMN], int column, int row, int size1, int s
 
 void task3_parenthesis_validator()
 {
-    // Todo
+    char validation;
+    int checkLeft = 0;
+    int checkRight = 0;
+    printf("Please enter a term for validation: \n");
+    scanf("%*s");
+    if (ParenthesisValidation(validation, checkRight, checkLeft))
+        printf("The parentheses are balanced correctly.\n");
+    else
+        printf("The parentheses are not balanced correctly.\n");
 }
+
+int ParenthesisValidation(char validation, int checkRight, int checkLeft) {
+    scanf(" %c", &validation);
+    if (validation == '\n') {
+        return 0;
+    }
+    if (validation == '<' || validation == '(' || validation == '[' || validation == '{')
+        checkRight++;
+    if (validation == '>' || validation == ')' || validation == ']' || validation == '}')
+        checkLeft++;
+    if (checkLeft != checkRight)
+        return 1;
+    return ParenthesisValidation(validation, checkRight, checkLeft);
+}
+
 
 void task4_queens_battle()
 {
