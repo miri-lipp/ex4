@@ -67,13 +67,18 @@ void task1_robot_paths()
     int result = 0;
     printf("Please enter the coordinates of the robot (column, row):\n");
     scanf("%d%d", &column, &row);
+    result = CalculatePath(column, row);
+    printf("The total number of paths the robot can take to reach home is: %d\n", result);
 }
 
 int CalculatePath(int column, int row) {
     int result = 0;
     if (column == 0 && row == 0)
-        return 0;
-    CalculatePath(column - 1, row);
+        return result;
+    CalculatePath(column, row - 1);
+    if (row == 0)
+        CalculatePath(column -1 , row);
+    result++;
 }
 
 void task2_human_pyramid()
