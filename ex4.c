@@ -7,6 +7,7 @@ Assignment:
 #include <string.h>
 
 void task1_robot_paths();
+int CalculatePath(int column, int row);
 void task2_human_pyramid();
 void task3_parenthesis_validator();
 void task4_queens_battle();
@@ -29,9 +30,6 @@ int main()
         {
             switch (task)
             {
-            case 6:
-                printf("Goodbye!\n");
-                break;
             case 1:
                 task1_robot_paths();
                 break;
@@ -46,6 +44,9 @@ int main()
                 break;
             case 5:
                 task5_crossword_generator();
+                break;
+            case 6:
+                printf("Goodbye!\n");
                 break;
             default:
                 printf("Please choose a task number from the list.\n");
@@ -62,7 +63,17 @@ int main()
 
 void task1_robot_paths()
 {
-    // Todo
+    int column, row;
+    int result = 0;
+    printf("Please enter the coordinates of the robot (column, row):\n");
+    scanf("%d%d", &column, &row);
+}
+
+int CalculatePath(int column, int row) {
+    int result = 0;
+    if (column == 0 && row == 0)
+        return 0;
+    CalculatePath(column - 1, row);
 }
 
 void task2_human_pyramid()
