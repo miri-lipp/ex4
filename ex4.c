@@ -5,7 +5,7 @@ Assignment:
 *******************/
 #include <stdio.h>
 #include <string.h>
-#define CHEERLEADERS 15
+#define DIMENSION 20
 #define ROW 5
 #define COLUMN 5
 void task1_robot_paths();
@@ -13,11 +13,9 @@ int CalculatePath(int column, int row, int result);
 void task2_human_pyramid(int size1, int size2);
 float HumanPyramid(float weight[][COLUMN], int column, int row, int size1, int size2);
 void task3_parenthesis_validator();
-int ParenthesisValidation(int checkRight, int checkLeft);
-void task4_queens_battle();
+int ParenthesisValidation(int openCircle, int openCurvy, int openSquare, int openTriangle);
+void task4_queens_battle(int size);
 void task5_crossword_generator();
-
-void showBuffer();
 
 
 int main()
@@ -45,9 +43,10 @@ int main()
                 break;
             case 3:
                 task3_parenthesis_validator();
+                //scanf("%*s");
                 break;
             case 4:
-                task4_queens_battle();
+                task4_queens_battle(DIMENSION);
                 break;
             case 5:
                 task5_crossword_generator();
@@ -129,33 +128,69 @@ float HumanPyramid(float weight[][COLUMN], int column, int row, int size1, int s
 
 void task3_parenthesis_validator()
 {
-    int checkLeft = 0;
-    int checkRight = 0;
+    int openCurvy = 0;
+    int openCircle = 0;
+    int openSquare = 0;
+    int openTriangle = 0;
     printf("Please enter a term for validation:\n");
-    if (ParenthesisValidation(checkRight, checkLeft))
+    scanf("%*c");
+    if (ParenthesisValidation(openCircle, openCurvy, openSquare, openTriangle))
         printf("The parentheses are balanced correctly.\n");
     else
         printf("The parentheses are not balanced correctly.\n");
 }
 
-int ParenthesisValidation( int checkRight, int checkLeft) {
+int ParenthesisValidation( int openCircle, int openCurvy, int openSquare, int openTriangle) {
     char validation;
-    scanf(" %c", &validation);
+    scanf("%c", &validation);
     if (validation == '\n')
-        return 1;
-    return ParenthesisValidation(checkRight, checkLeft);
+        return openCircle == 0 && openCurvy == 0 && openSquare == 0 && openTriangle == 0;
+    if (validation == '[')
+        return ParenthesisValidation(openCircle, openCurvy, openSquare + 1, openTriangle);
+    if (validation == ']') {
+        if (openSquare > 0)
+            return ParenthesisValidation(openCircle, openCurvy, openSquare - 1, openTriangle);
+        return 0;
+    }
+    if (validation == '(')
+        return ParenthesisValidation(openCircle + 1, openCurvy, openSquare, openTriangle);
+    if (validation == ')') {
+        if (openCircle > 0)
+            return ParenthesisValidation(openCircle - 1, openCurvy, openSquare, openTriangle);
+        return 0;
+    }
+    if (validation == '{')
+        return ParenthesisValidation(openCircle, openCurvy + 1, openSquare, openTriangle);
+    if (validation == '}') {
+        if (openCurvy > 0)
+            return ParenthesisValidation(openCircle, openCurvy - 1, openSquare, openTriangle);
+        return 0;
+    }
+    if (validation == '<')
+        return ParenthesisValidation(openCircle, openCurvy, openSquare, openTriangle + 1);
+    if (validation == '>') {
+        if (openTriangle > 0)
+            return ParenthesisValidation(openCircle, openCurvy, openSquare, openTriangle - 1);
+        return 0;
+    }
+
+    ParenthesisValidation(openCircle, openCurvy, openSquare, openTriangle);
 }
 
-void showBuffer() {
-    static int count = 0;
-    char buffer[256]; // A small buffer to store input temporarily
-    fgets(buffer, sizeof(buffer), stdin);
-    printf("Call %d: |%s|\n", count++, buffer);
-}
 
-void task4_queens_battle()
+
+void task4_queens_battle(int size)
 {
-    // Todo
+    int dimension;
+    char board[size][size];
+    printf("Please enter the board dimensions:\n");
+    scanf("%d", &dimension);
+    printf("Please enter the %d*%d puzzle board\n", dimension, dimension);
+    scanf("%*c");
+    for (int i = 0; i < dimension; i++) {
+        for (int j = 0; j < dimension; j++)
+            scanf(" %c", &board[i][j]);
+    }
 }
 
 void task5_crossword_generator()
