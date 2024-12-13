@@ -13,9 +13,12 @@ int CalculatePath(int column, int row, int result);
 void task2_human_pyramid(int size1, int size2);
 float HumanPyramid(float weight[][COLUMN], int column, int row, int size1, int size2);
 void task3_parenthesis_validator();
-int ParenthesisValidation(char validation, int checkRight, int checkLeft);
+int ParenthesisValidation(int checkRight, int checkLeft);
 void task4_queens_battle();
 void task5_crossword_generator();
+
+void showBuffer();
+
 
 int main()
 {
@@ -126,31 +129,29 @@ float HumanPyramid(float weight[][COLUMN], int column, int row, int size1, int s
 
 void task3_parenthesis_validator()
 {
-    char validation;
     int checkLeft = 0;
     int checkRight = 0;
-    printf("Please enter a term for validation: \n");
-    scanf("%*s");
-    if (ParenthesisValidation(validation, checkRight, checkLeft))
+    printf("Please enter a term for validation:\n");
+    if (ParenthesisValidation(checkRight, checkLeft))
         printf("The parentheses are balanced correctly.\n");
     else
         printf("The parentheses are not balanced correctly.\n");
 }
 
-int ParenthesisValidation(char validation, int checkRight, int checkLeft) {
+int ParenthesisValidation( int checkRight, int checkLeft) {
+    char validation;
     scanf(" %c", &validation);
-    if (validation == '\n') {
-        return 0;
-    }
-    if (validation == '<' || validation == '(' || validation == '[' || validation == '{')
-        checkRight++;
-    if (validation == '>' || validation == ')' || validation == ']' || validation == '}')
-        checkLeft++;
-    if (checkLeft != checkRight)
+    if (validation == '\n')
         return 1;
-    return ParenthesisValidation(validation, checkRight, checkLeft);
+    return ParenthesisValidation(checkRight, checkLeft);
 }
 
+void showBuffer() {
+    static int count = 0;
+    char buffer[256]; // A small buffer to store input temporarily
+    fgets(buffer, sizeof(buffer), stdin);
+    printf("Call %d: |%s|\n", count++, buffer);
+}
 
 void task4_queens_battle()
 {
