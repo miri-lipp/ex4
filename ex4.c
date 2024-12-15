@@ -13,8 +13,9 @@ int CalculatePath(int column, int row, int result);
 void task2_human_pyramid(int size1, int size2);
 float HumanPyramid(float weight[][COLUMN], int column, int row, int size1, int size2);
 void task3_parenthesis_validator();
-int ParenthesisValidation(int openCircle, int openCurvy, int openSquare, int openTriangle);
-void task4_queens_battle(int size);
+int ParenthesisValidationInput();
+int ParenthesisValidation(char validation);
+void task4_queens_battle();
 int QueensPlacement(int CoordinateX[], int CoordinateY[], int size, int counter1, int counter2);
 int CheckPlacementWithColorGreed(int board[][DIMENSION], int size);
 void task5_crossword_generator();
@@ -45,10 +46,10 @@ int main()
                 break;
             case 3:
                 task3_parenthesis_validator();
-                //scanf("%*s");
+                scanf("%*s");
                 break;
             case 4:
-                task4_queens_battle(DIMENSION);
+                task4_queens_battle();
                 break;
             case 5:
                 task5_crossword_generator();
@@ -130,86 +131,91 @@ float HumanPyramid(float weight[][COLUMN], int column, int row, int size1, int s
 
 void task3_parenthesis_validator()
 {
-    int openCurvy = 0;
-    int openCircle = 0;
-    int openSquare = 0;
-    int openTriangle = 0;
     printf("Please enter a term for validation:\n");
     scanf("%*c");
-    if (ParenthesisValidation(openCircle, openCurvy, openSquare, openTriangle))
+    if (ParenthesisValidationInput())
         printf("The parentheses are balanced correctly.\n");
     else
         printf("The parentheses are not balanced correctly.\n");
 }
 
-int ParenthesisValidation( int openCircle, int openCurvy, int openSquare, int openTriangle) {
+int ParenthesisValidationInput() {
     char validation;
     scanf("%c", &validation);
     if (validation == '\n')
-        return openCircle == 0 && openCurvy == 0 && openSquare == 0 && openTriangle == 0;
-    if (validation == '[')
-        return ParenthesisValidation(openCircle, openCurvy, openSquare + 1, openTriangle);
-    if (validation == ']') {
-        if (openSquare > 0)
-            return ParenthesisValidation(openCircle, openCurvy, openSquare - 1, openTriangle);
         return 0;
-    }
-    if (validation == '(')
-        return ParenthesisValidation(openCircle + 1, openCurvy, openSquare, openTriangle);
-    if (validation == ')') {
-        if (openCircle > 0)
-            return ParenthesisValidation(openCircle - 1, openCurvy, openSquare, openTriangle);
+    if (ParenthesisValidation(validation))
         return 0;
-    }
-    if (validation == '{')
-        return ParenthesisValidation(openCircle, openCurvy + 1, openSquare, openTriangle);
-    if (validation == '}') {
-        if (openCurvy > 0)
-            return ParenthesisValidation(openCircle, openCurvy - 1, openSquare, openTriangle);
-        return 0;
-    }
-    if (validation == '<')
-        return ParenthesisValidation(openCircle, openCurvy, openSquare, openTriangle + 1);
-    if (validation == '>') {
-        if (openTriangle > 0)
-            return ParenthesisValidation(openCircle, openCurvy, openSquare, openTriangle - 1);
-        return 0;
-    }
-
-    ParenthesisValidation(openCircle, openCurvy, openSquare, openTriangle);
+    if (!ParenthesisValidation(validation))
+        return 1;
+    ParenthesisValidationInput();
 }
 
+int ParenthesisValidation(char validation) {
+    switch (validation) {
+        case '<': {
+            return 1;
+            case '>':
+                return 0;
+        }
+        case '[': {
+            return 1;
+            case ']':
+                return 0;
+        }
+        case '{': {
+            return 1;
+            case '}':
+                return 0;
+        }
+        case '(': {
+            return 1;
+            case ')':
+                return 0;
+        }
+        default:
+            return 0;
+    }
+}
 
-
-void task4_queens_battle(int size)
+void task4_queens_battle()
 {
     int dimension;
-    char board[size][size];
     printf("Please enter the board dimensions:\n");
     scanf("%d", &dimension);
+    char board[dimension][dimension];
+    int color[dimension];
     printf("Please enter the %d*%d puzzle board\n", dimension, dimension);
     scanf("%*c");
     for (int i = 0; i < dimension; i++) {
-        for (int j = 0; j < dimension; j++)
+        for (int j = 0; j < dimension; j++){
             scanf(" %c", &board[i][j]);
+            color[j] = i;
+            if (board[0][0] != board[i][j])
+                color[j] = i + 1;
+            //if (colors new)
+            //colors.push color
+        }
+
     }
+//colors[dimension]
 }
 
 int QueenPlacement(int coordinateX[], int coordinateY[], int size, int counter1, int counter2){
-    if(size < 0)
+    if (size < 0)
         return 1;
+    else {
+    // if (colors.not.used)
     if (coordinateX[counter1] == coordinateX[counter2] || coordinateY[counter1] == coordinateY[counter2])
         return 0;
     if (coordinateX[counter1] - coordinateX[counter2] == 1 || coordinateY[counter1] - coordinateY[counter2] == 1)
         return 0;
     if (coordinateX[counter1] - coordinateX[counter2] == -1 || coordinateY[counter1] - coordinateY[counter2] == -1)
         return 0;
-    return QueenPlacement(coordinateX, coordinateY, size-1, counter1 + 1, counter2 + 1);
-}
 
-int CheckPlacementWithColorGreed(int board[][DIMENSION], int size){
-    if (size < 0)
-        return 1;
+    //else return false
+    return QueenPlacement(coordinateX, coordinateY, size-1, counter1 + 1, counter2 + 1);
+    }
 }
 
 void task5_crossword_generator()
