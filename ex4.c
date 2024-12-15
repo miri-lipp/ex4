@@ -15,6 +15,8 @@ float HumanPyramid(float weight[][COLUMN], int column, int row, int size1, int s
 void task3_parenthesis_validator();
 int ParenthesisValidation(int openCircle, int openCurvy, int openSquare, int openTriangle);
 void task4_queens_battle(int size);
+int QueensPlacement(int CoordinateX[], int CoordinateY[], int size, int counter1, int counter2);
+int CheckPlacementWithColorGreed(int board[][DIMENSION], int size);
 void task5_crossword_generator();
 
 
@@ -191,6 +193,23 @@ void task4_queens_battle(int size)
         for (int j = 0; j < dimension; j++)
             scanf(" %c", &board[i][j]);
     }
+}
+
+int QueenPlacement(int coordinateX[], int coordinateY[], int size, int counter1, int counter2){
+    if(size < 0)
+        return 1;
+    if (coordinateX[counter1] == coordinateX[counter2] || coordinateY[counter1] == coordinateY[counter2])
+        return 0;
+    if (coordinateX[counter1] - coordinateX[counter2] == 1 || coordinateY[counter1] - coordinateY[counter2] == 1)
+        return 0;
+    if (coordinateX[counter1] - coordinateX[counter2] == -1 || coordinateY[counter1] - coordinateY[counter2] == -1)
+        return 0;
+    return QueenPlacement(coordinateX, coordinateY, size-1, counter1 + 1, counter2 + 1);
+}
+
+int CheckPlacementWithColorGreed(int board[][DIMENSION], int size){
+    if (size < 0)
+        return 1;
 }
 
 void task5_crossword_generator()
