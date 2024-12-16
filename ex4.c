@@ -16,7 +16,8 @@ void task3_parenthesis_validator();
 int ParenthesisValidationInput();
 int ParenthesisValidation(char validation);
 void task4_queens_battle();
-int QueenPlacementCheck(int queen[], int coordinateX, int coordinateY);
+int QueenPlacementCheck(int coordX[], int coordY[], int row, int column, int queen);
+int QueenPlace(int coordX[], int coordY[], int dimension, int queen, int row, int column);
 void task5_crossword_generator();
 
 
@@ -184,7 +185,8 @@ void task4_queens_battle()
     scanf("%d", &dimension);
     char board[dimension][dimension]; //user enters board colors as letters
     int color[dimension];
-    int queen[dimension];
+    int coordX[dimension];
+    int coordY[dimension];
     printf("Please enter the %d*%d puzzle board\n", dimension, dimension);
     scanf("%*c");
     for (int i = 0; i < dimension; i++) {
@@ -199,7 +201,7 @@ void task4_queens_battle()
     }
     for (int i = 0; i < dimension; i++) {
         for (int j = 0; j < dimension; j++) {
-            if (QueenPlacementCheck(queen, i, j))
+            if (QueenPlace(coordX, coordY, dimension, 0, i, j))
                 printf("X ");
             else
                 printf("* ");
@@ -209,14 +211,35 @@ void task4_queens_battle()
 //colors[dimension]
 }
 
-int QueenPlacementCheck(int queen[], int coordinateX, int coordinateY){
-    if (queen[coordinateX] == coordinateY)
-        return 1;
-    if (coordinateY - coordinateX == 1)
-        return 1;
-    if (coordinateY - coordinateX == -1)
+int QueenPlacementCheck(int coordX[], int coordY[], int row, int column, int queen){
+    if (queen == 0) //if all queens checked the can place
         return 0;
+    int prev_row = coordX[queen - 1];
+    int prev_column = coordY[queen - 1];
+    if (prev_row == row || prev_column == column) // checking position of previous queen
+        return 1;
+    if (prev_row - row == 1 || prev_column - column == 1)
+        return 1;
+    if (prev_row - row == -1 || prev_column - column == -1)
+        return 1;
+    return QueenPlacementCheck(coordX, coordY, row, column, queen - 1);
 }
+
+int QueenPlace(int coordX[], int coordY[], int dimension, int queen, int row, int column) {
+    if (queen == dimension)
+        return 1;
+    if (!QueenPlacementCheck(coordX, coordY, row, column, queen)) {
+        coordX[queen] = row;
+        coordY[queen] = column;
+        if (QueenPlace(coordX, coordY, dimension, queen + 1, row, column))
+            return 1;
+    }
+    coordX[queen] = -1;
+    coordY[queen] = -1;
+    return 0;
+}
+
+
 
 void task5_crossword_generator()
 {
