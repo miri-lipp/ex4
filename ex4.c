@@ -16,7 +16,7 @@ void task3_parenthesis_validator();
 int ParenthesisValidationInput();
 int ParenthesisValidation(char validation);
 void task4_queens_battle();
-int QueenPlacement(int coordinateX[], int coordinateY[], int color[], int size, int counter1, int counter2);
+int QueenPlacementCheck(int queen[], int coordinateX, int coordinateY);
 void task5_crossword_generator();
 
 
@@ -184,7 +184,7 @@ void task4_queens_battle()
     scanf("%d", &dimension);
     char board[dimension][dimension]; //user enters board colors as letters
     int color[dimension];
-    int coordinateX[dimension], coordinateY[dimension];
+    int queen[dimension];
     printf("Please enter the %d*%d puzzle board\n", dimension, dimension);
     scanf("%*c");
     for (int i = 0; i < dimension; i++) {
@@ -197,9 +197,9 @@ void task4_queens_battle()
             //colors.push color
         }
     }
-    for (int i = dimension; i > 0; i--) {
-        for (int j = dimension; j > 0; j--) {
-            if (QueenPlacement(coordinateX, coordinateY, color, dimension, j, i))
+    for (int i = 0; i < dimension; i++) {
+        for (int j = 0; j < dimension; j++) {
+            if (QueenPlacementCheck(queen, i, j))
                 printf("X ");
             else
                 printf("* ");
@@ -209,19 +209,13 @@ void task4_queens_battle()
 //colors[dimension]
 }
 
-int QueenPlacement(int coordinateX[], int coordinateY[], int color[], int size, int counter1, int counter2){
-    if (coordinateX[0] == 0 && coordinateY[0] == 0)
+int QueenPlacementCheck(int queen[], int coordinateX, int coordinateY){
+    if (queen[coordinateX] == coordinateY)
+        return 1;
+    if (coordinateY - coordinateX == 1)
+        return 1;
+    if (coordinateY - coordinateX == -1)
         return 0;
-    // if (colors.not.used)
-    if (coordinateX[counter1] == coordinateX[counter2] || coordinateY[counter1] == coordinateY[counter2])
-        return 1;
-    if (coordinateX[counter1] - coordinateX[counter2] == 1 || coordinateY[counter1] - coordinateY[counter2] == 1)
-        return 1;
-    if (coordinateX[counter1] - coordinateX[counter2] == -1 || coordinateY[counter1] - coordinateY[counter2] == -1)
-        return 1;
-    //if (coordinateX[counter1] == color[counter1] && coordinateY[counter1] == color[counter1])
-    //else return false
-    //return QueenPlacement(coordinateX, coordinateY, color, size-1, counter1, counter2);
 }
 
 void task5_crossword_generator()
