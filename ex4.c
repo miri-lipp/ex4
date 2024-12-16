@@ -16,8 +16,7 @@ void task3_parenthesis_validator();
 int ParenthesisValidationInput();
 int ParenthesisValidation(char validation);
 void task4_queens_battle();
-int QueensPlacement(int CoordinateX[], int CoordinateY[], int size, int counter1, int counter2);
-int CheckPlacementWithColorGreed(int board[][DIMENSION], int size);
+int QueenPlacement(int coordinateX[], int coordinateY[], int color[], int size, int counter1, int counter2);
 void task5_crossword_generator();
 
 
@@ -85,12 +84,12 @@ void task1_robot_paths()
 }
 
 int CalculatePath(int column, int row, int result) {
-    if (column == 0 && row == 0)
-        return result;
+    if (column == 0 && row == 0) // base case, there is only one path to go home if robot is already on 0, 0
+        return result; //returns the number of paths calculated
     if (column == 0)
-        return CalculatePath(column, row -1, result + 1);
+        return CalculatePath(column, row -1, result + 1); //if robot can go left then result + 1
     if (row == 0)
-        return CalculatePath(column -1, row, result + 1);
+        return CalculatePath(column -1, row, result + 1); //if robot can go down the result + 1
     return CalculatePath(column - 1, row, result + 1);
 }
 
@@ -120,13 +119,13 @@ void task2_human_pyramid(int size1, int size2)
 float HumanPyramid(float weight[][COLUMN], int column, int row, int size1, int size2) {
     float resultLeft = 0;
     float resultRight = 0;
-    if (column == 0 && row == 0)
+    if (column == 0 && row == 0) //base case, if there are no cheerleaders above, then returns weight
         return weight[row][column];
     if (column >= 0 && row < size1 && row > 0)
-        resultLeft =  0.5 * HumanPyramid(weight, column - 1, row - 1, size1, size2);
+        resultLeft =  0.5 * HumanPyramid(weight, column - 1, row - 1, size1, size2); //result of 0.5 weight of row above and column left
     if (column <= row)
-        resultRight = 0.5 * HumanPyramid(weight, column, row - 1, size1, size2);
-    return weight[row][column] + resultLeft + resultRight;
+        resultRight = 0.5 * HumanPyramid(weight, column, row - 1, size1, size2); // result of 0.5 weight of row above and column right
+    return weight[row][column] + resultLeft + resultRight; //returns result of weight plus column left and right
 }
 
 void task3_parenthesis_validator()
@@ -142,16 +141,16 @@ void task3_parenthesis_validator()
 int ParenthesisValidationInput() {
     char validation;
     scanf("%c", &validation);
-    if (validation == '\n')
+    if (validation == '\n') // base case, if enter pressed then return 0, recursion ends
         return 0;
-    if (ParenthesisValidation(validation))
+    if (ParenthesisValidation(validation)) //if the brackets are closedd correctly returns 0
         return 0;
-    if (!ParenthesisValidation(validation))
+    if (!ParenthesisValidation(validation)) //if not returns 1
         return 1;
     ParenthesisValidationInput();
 }
 
-int ParenthesisValidation(char validation) {
+int ParenthesisValidation(char validation) { //function to check brackets
     switch (validation) {
         case '<': {
             return 1;
@@ -183,39 +182,46 @@ void task4_queens_battle()
     int dimension;
     printf("Please enter the board dimensions:\n");
     scanf("%d", &dimension);
-    char board[dimension][dimension];
+    char board[dimension][dimension]; //user enters board colors as letters
     int color[dimension];
+    int coordinateX[dimension], coordinateY[dimension];
     printf("Please enter the %d*%d puzzle board\n", dimension, dimension);
     scanf("%*c");
     for (int i = 0; i < dimension; i++) {
         for (int j = 0; j < dimension; j++){
-            scanf(" %c", &board[i][j]);
+            scanf(" %c", &board[i]);
             color[j] = i;
             if (board[0][0] != board[i][j])
-                color[j] = i + 1;
+                color[j] = i + 1; //checking if there is a new color for board that user entered
             //if (colors new)
             //colors.push color
         }
-
+    }
+    for (int i = dimension; i > 0; i--) {
+        for (int j = dimension; j > 0; j--) {
+            if (QueenPlacement(coordinateX, coordinateY, color, dimension, j, i))
+                printf("X ");
+            else
+                printf("* ");
+        }
+        printf("\n");
     }
 //colors[dimension]
 }
 
-int QueenPlacement(int coordinateX[], int coordinateY[], int size, int counter1, int counter2){
-    if (size < 0)
-        return 1;
-    else {
+int QueenPlacement(int coordinateX[], int coordinateY[], int color[], int size, int counter1, int counter2){
+    if (coordinateX[0] == 0 && coordinateY[0] == 0)
+        return 0;
     // if (colors.not.used)
     if (coordinateX[counter1] == coordinateX[counter2] || coordinateY[counter1] == coordinateY[counter2])
-        return 0;
+        return 1;
     if (coordinateX[counter1] - coordinateX[counter2] == 1 || coordinateY[counter1] - coordinateY[counter2] == 1)
-        return 0;
+        return 1;
     if (coordinateX[counter1] - coordinateX[counter2] == -1 || coordinateY[counter1] - coordinateY[counter2] == -1)
-        return 0;
-
+        return 1;
+    //if (coordinateX[counter1] == color[counter1] && coordinateY[counter1] == color[counter1])
     //else return false
-    return QueenPlacement(coordinateX, coordinateY, size-1, counter1 + 1, counter2 + 1);
-    }
+    //return QueenPlacement(coordinateX, coordinateY, color, size-1, counter1, counter2);
 }
 
 void task5_crossword_generator()
