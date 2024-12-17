@@ -15,9 +15,10 @@ float HumanPyramid(float weight[][COLUMN], int column, int row, int size1, int s
 void task3_parenthesis_validator();
 int ParenthesisValidationInput();
 int ParenthesisValidation(char validation);
-void task4_queens_battle();
-int QueenPlacementCheck(int queenPlacement[][2], int colorGrid[], int current);
-int QueenPlace();
+void task4_queens_battle(int size);
+int CheckColorPlacement(int colorGrid[][DIMENSION], int colorUsed[], int row, int column);
+int QueenPlacementCheck(int queenPlacement[][2], int current, int checkIndex);
+int PlaceQueens(int colorGrid[][DIMENSION], int colorUsed[], int queenPlacement[][2], int dimension, int row, int column);
 void task5_crossword_generator();
 
 
@@ -49,7 +50,7 @@ int main()
                 scanf("%*s");
                 break;
             case 4:
-                task4_queens_battle();
+                task4_queens_battle(DIMENSION);
                 break;
             case 5:
                 task5_crossword_generator();
@@ -178,60 +179,78 @@ int ParenthesisValidation(char validation) { //function to check brackets
     }
 }
 
-void task4_queens_battle()
+void task4_queens_battle(int size)
 {
     int dimension;
     printf("Please enter the board dimensions:\n");
     scanf("%d", &dimension);
-    char colorBoard[dimension][dimension]; //user enters board colors as letters
-    int colorGrid[dimension];
-    int queenPlacement[dimension][2];
+    char colorBoard[size][size]; //user enters board colors as letters
+    int colorGrid[size][size];
+    int queenPlacement[size][2];
+    int colorUsed[size];
+    char board[size][size];
     printf("Please enter the %d*%d puzzle board\n", dimension, dimension);
     scanf("%*c");
     for (int i = 0; i < dimension; i++) {
         for (int j = 0; j < dimension; j++){
             scanf(" %c", &colorBoard[i][j]);
-            colorGrid[i] = 0;
-            if (colorBoard[0][0] != colorBoard[i][j])
-                colorGrid[i] = i;
-            //checking if there is a new color for board that user entered
+            colorGrid[i][j] = colorBoard[i][j];
             //if (colors new)
             //colors.push color
+            colorUsed[i] = 0;
+            queenPlacement[i][0] = 0;
+            queenPlacement[i][1] = 0;
         }
     }
-    queenPlacement[0][0] = colorGrid[0];
-    queenPlacement[0][1] = colorGrid[0];
-    for (int i = 0; i < dimension; i++) {
-        for (int j = 0; j < dimension; j++) {
-            if (QueenPlace(i, j, dimension, queenPlacement, i, colorGrid))
-                printf("X ");
-            else
-                printf("* ");
+    if (PlaceQueens(colorGrid, colorUsed, queenPlacement, dimension, 0, 0)) {
+        for (int i = 0; i < dimension; i++) {
+            board[queenPlacement[i][0]][queenPlacement[i][1]] = 'X';
+            for (int j = 0; j < dimension; j++) {
+                board[i][j] = '*';
+                printf("%c ", board[i][j]);
+            }
+            printf("\n");
         }
-        printf("\n");
     }
+    else
+        printf("This puzzle cannot be solved.\n");
 }
 
-int QueenPlacementCheck(int queenPlacement[][2], int colorGrid[], int current){
-    if (queenPlacement[current][0] == colorGrid[current - 1] || queenPlacement[current][1] == colorGrid[current - 1])
-        return 1;
-    if (queenPlacement[current][0] == queenPlacement[current - 1][0])
-        return 1;
-    if (queenPlacement[current][1] == queenPlacement[current - 1][1])
-        return 1;
-    if (queenPlacement[current][0] - queenPlacement[current - 1][0] == 1 || queenPlacement[current][1] - queenPlacement[current - 1][1] == 1)
-        return 1;
-    if (queenPlacement[current][0] - queenPlacement[current - 1][0] == -1 || queenPlacement[current][1] - queenPlacement[current - 1][1] == -1)
+int CheckColorPlacement(int colorGrid[][DIMENSION], int colorUsed[], int row, int column) { //getting the color of the current cell
+    int color = 0;
+    color = colorGrid[row][column];
+    if (colorUsed[color] == 1)
         return 1;
     return 0;
 }
 
-int QueenPlace(int row, int column, int dimension, int queenPlacement[][2], int current, int colorGrid[]) {
-    if (row == dimension && column <= dimension)
+int QueenPlacementCheck(int queenPlacement[][2], int current, int checkIndex){
+    if (checkIndex == current)
         return 0;
-    if (QueenPlacementCheck(queenPlacement, colorGrid, current))
-        return QueenPlace(row, column + 1, dimension, queenPlacement, current, colorGrid);
-    return QueenPlace(row + 1, column, dimension, queenPlacement, current, colorGrid);
+    if (queenPlacement[current][0] == queenPlacement[checkIndex][0])
+        return 1;
+    if (queenPlacement[current][1] == queenPlacement[checkIndex][1])
+        return 1;
+    if (queenPlacement[current][0] - queenPlacement[checkIndex][0] == 1 || queenPlacement[current][1] - queenPlacement[checkIndex][1] == 1)
+        return 1;
+    if (queenPlacement[current][0] - queenPlacement[checkIndex][0] == -1 || queenPlacement[current][1] - queenPlacement[checkIndex][1] == -1)
+        return 1;
+    return QueenPlacementCheck(queenPlacement, current, checkIndex + 1);
+}
+
+int PlaceQueens(int colorGrid[][DIMENSION], int colorUsed[], int queenPlacement[][2], int dimension, int row, int column) {
+    if (row == dimension) //base case
+        return 0;
+    if (column == dimension)
+        return 1;
+    if (!CheckColorPlacement(colorGrid, colorUsed, row, column)) {
+        colorUsed[colorGrid[row][column]] = 1;
+        queenPlacement[row][0] = row;
+        queenPlacement[row][1] = column;
+        if (QueenPlacementCheck(queenPlacement, row, 0) && PlaceQueens(colorGrid, colorUsed, queenPlacement, dimension, row + 1, 0))
+            return 0;
+        colorUsed[colorGrid[row][column]] = 0;
+    }
 }
 
 
