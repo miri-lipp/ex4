@@ -222,17 +222,22 @@ int CheckColorPlacement(int colorGrid[][DIMENSION], int colorUsed[], int row, in
 }
 
 int QueenPlacementCheck(char board[][DIMENSION], int row, int column, int checkRow, int checkColumn, int dimension){
-    if (checkRow >= dimension || checkColumn >= dimension || checkRow < 0 || checkColumn < 0)
+    if (checkRow >= dimension)
         return 0;
-    if (checkRow == row && board[row][checkColumn] != '*')
-        return QueenPlacementCheck(board, row, column, checkRow + 1, checkColumn, dimension);
-    if (checkColumn == column && board[checkRow][column] != '*')
+    if (checkRow == row && checkColumn == column) {
+        if (checkColumn + 1 < dimension)
+            return QueenPlacementCheck(board, row, column, checkRow, checkColumn + 1, dimension);
+        return QueenPlacementCheck(board, row, column, checkRow + 1, 0, dimension);
+    }
+    if (checkColumn == column && board[checkRow][column] == 'X')
+        return 1;
+    if (checkRow == row && board[checkRow][column] == 'X')
+        return 1;
+    if ((row - checkRow <= 1 && column - checkColumn <= 1) && board[checkRow][checkColumn] == 'X')
+        return 1;
+    if (checkColumn + 1 < dimension)
         return QueenPlacementCheck(board, row, column, checkRow, checkColumn + 1, dimension);
-    if ((row - checkRow == 1 || row - checkRow == -1) && board[checkRow][checkColumn] != '*')
-        return QueenPlacementCheck(board, row, column, checkRow + 1, checkColumn + 1, dimension);
-    if ((column - checkColumn == 1 || column - checkColumn == -1) && board[checkRow][checkColumn] != '*')
-        return QueenPlacementCheck(board, row, column, checkRow + 1, checkColumn - 1, dimension);
-    return 1;
+    return QueenPlacementCheck(board, row, column, checkRow + 1, 0, dimension);
 }
 
 int PlaceQueens(int colorGrid[][DIMENSION], int colorUsed[], char board[][DIMENSION], int dimension, int row, int column) {
