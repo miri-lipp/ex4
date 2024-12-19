@@ -9,7 +9,7 @@ Assignment:
 #define ROW 5
 #define COLUMN 5
 void task1_robot_paths();
-int CalculatePath(int column, int row, int result);
+int CalculatePath(int column, int row);
 void task2_human_pyramid(int size1, int size2);
 float HumanPyramid(float weight[][COLUMN], int column, int row, int size1, int size2);
 void task3_parenthesis_validator();
@@ -18,6 +18,9 @@ int ParenthesisValidation(char validation);
 void task4_queens_battle(int size);
 int CheckColorPlacement(int colorGrid[][DIMENSION], int colorUsed[], int row, int column);
 int QueenPlacementCheck(char board[][DIMENSION], int row, int column, int checkRow, int checkColumn, int dimension);
+int RowCheck(char board[][DIMENSION], int row, int checkRow);
+int ColumnCheck(char board[][DIMENSION], int column, int checkColumn);
+int DiagonalCheck(char board[][DIMENSION], int row, int column, int dimension);
 int PlaceQueens(int colorGrid[][DIMENSION], int colorUsed[], char board[][DIMENSION], int dimension, int row, int column);
 void task5_crossword_generator();
 
@@ -74,25 +77,25 @@ int main()
 void task1_robot_paths()
 {
     int column, row;
-    int result = 1;
+    int result = 0;
     printf("Please enter the coordinates of the robot (column, row):\n");
     scanf("%d%d", &column, &row);
     if (column < 0 || row < 0) {
         printf("The total number of paths the robot can take to reach home is: %d\n", result);
         return;
     }
-    result = CalculatePath(column, row, result);
+    result = CalculatePath(column, row);
     printf("The total number of paths the robot can take to reach home is: %d\n", result);
 }
 
-int CalculatePath(int column, int row, int result) {
+int CalculatePath(int column, int row) {
     if (column == 0 && row == 0) // base case, there is only one path to go home if robot is already on 0, 0
-        return result; //returns the number of paths calculated
+        return 1;
     if (column == 0)
-        return CalculatePath(column, row -1, result + 1); //if robot can go left then result + 1
+        return CalculatePath(column, row -1); //if robot can go left then result + 1
     if (row == 0)
-        return CalculatePath(column -1, row, result + 1); //if robot can go down the result + 1
-    return CalculatePath(column - 1, row, result + 1);
+        return CalculatePath(column -1, row); //if robot can go down the result + 1
+    return CalculatePath(column - 1, row) + CalculatePath(column, row - 1); //both directions
 }
 
 void task2_human_pyramid(int size1, int size2)
@@ -221,34 +224,63 @@ int CheckColorPlacement(int colorGrid[][DIMENSION], int colorUsed[], int row, in
     return 0;
 }
 
-int QueenPlacementCheck(char board[][DIMENSION], int row, int column, int checkRow, int checkColumn, int dimension){
-    if (checkRow >= dimension)
+// int QueenPlacementCheck(char board[][DIMENSION], int row, int column, int checkRow, int checkColumn, int dimension){
+//     if (checkRow >= dimension)
+//         return 0;
+//     if (checkRow == row && checkColumn == column) {
+//         if (checkColumn + 1 < dimension)
+//             return QueenPlacementCheck(board, row, column, checkRow, checkColumn + 1, dimension);
+//         return QueenPlacementCheck(board, row, column, checkRow + 1, 0, dimension);
+//     }
+//     if (checkColumn == column && board[checkRow][column] == 'X')
+//         return 1;
+//     if (checkRow == row && board[checkRow][column] == 'X')
+//         return 1;
+//     if ((row - checkRow <= 1 && column - checkColumn <= 1) && board[checkRow][checkColumn] == 'X')
+//         return 1;
+//     if (checkColumn + 1 < dimension)
+//         return QueenPlacementCheck(board, row, column, checkRow, checkColumn + 1, dimension);
+//     return QueenPlacementCheck(board, row, column, checkRow + 1, 0, dimension);
+// }
+
+int RowCheck(char board[][DIMENSION], int row, int checkRow) {
+    if (checkRow < 0)
         return 0;
-    if (checkRow == row && checkColumn == column) {
-        if (checkColumn + 1 < dimension)
-            return QueenPlacementCheck(board, row, column, checkRow, checkColumn + 1, dimension);
-        return QueenPlacementCheck(board, row, column, checkRow + 1, 0, dimension);
-    }
-    if (checkColumn == column && board[checkRow][column] == 'X')
+    if (board[row][checkRow] == 'X')
         return 1;
-    if (checkRow == row && board[checkRow][column] == 'X')
+    return RowCheck(board, row, checkRow - 1);
+}
+
+int ColumnCheck(char board[][DIMENSION], int column, int checkColumn) {
+    if (checkColumn < 0)
+        return 0;
+    if (board[checkColumn][column] == 'X')
         return 1;
-    if ((row - checkRow <= 1 && column - checkColumn <= 1) && board[checkRow][checkColumn] == 'X')
+    return ColumnCheck(board, column, checkColumn - 1);
+}
+
+int DiagonalCheck(char board[][DIMENSION], int row, int column, int dimension) {
+    if (row > 0 && column > 0 && board[row - 1][column - 1] == 'X')
         return 1;
-    if (checkColumn + 1 < dimension)
-        return QueenPlacementCheck(board, row, column, checkRow, checkColumn + 1, dimension);
-    return QueenPlacementCheck(board, row, column, checkRow + 1, 0, dimension);
+    if (row > 0 && column < dimension  && board[row - 1][column + 1] == 'X')
+        return 1;
+    if (row < dimension && column > 0 && board[row + 1][column - 1] == 'X')
+        return 1;
+    if (row < dimension && column < dimension && board[row + 1][column + 1] == 'X')
+        return 1;
+    return 0;
 }
 
 int PlaceQueens(int colorGrid[][DIMENSION], int colorUsed[], char board[][DIMENSION], int dimension, int row, int column) {
     if (row == dimension) //base case
         return 1;
-    if (column == dimension)
+    if (column == dimension) //also base case
         return 0;
-    if (!CheckColorPlacement(colorGrid, colorUsed, row, column)) {
+    if (!CheckColorPlacement(colorGrid, colorUsed, row, column) && !RowCheck(board, row, dimension)
+        && !ColumnCheck(board, column, dimension) && !DiagonalCheck(board, row, column, dimension)) {
         colorUsed[colorGrid[row][column] - 'A'] = 1;
         board[row][column] = 'X';
-        if (QueenPlacementCheck(board, row, column, 0, 0, dimension) && PlaceQueens(colorGrid, colorUsed, board, dimension, row + 1, 0))
+        if (PlaceQueens(colorGrid, colorUsed, board, dimension, row + 1, 0)) //backtraking
             return 1;
         colorUsed[colorGrid[row][column] - 'A'] = 0;
         board[row][column] = '*';
