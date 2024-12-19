@@ -5,9 +5,17 @@ Assignment:
 *******************/
 #include <stdio.h>
 #include <string.h>
-#define DIMENSION 20
+#define MAX_DIMENSION 20
 #define ROW 5
 #define COLUMN 5
+#define MAX_SLOTS 100
+#define MAX_LENGTH 15
+struct Crossword {
+    int row;
+    int column;
+    int length;
+    char direction;
+};
 void task1_robot_paths();
 int CalculatePath(int column, int row);
 void task2_human_pyramid(int size1, int size2);
@@ -15,14 +23,15 @@ float HumanPyramid(float weight[][COLUMN], int column, int row, int size1, int s
 void task3_parenthesis_validator();
 int ParenthesisValidationInput();
 int ParenthesisValidation(char validation);
-void task4_queens_battle(int size);
-int CheckColorPlacement(int colorGrid[][DIMENSION], int colorUsed[], int row, int column);
-int QueenPlacementCheck(char board[][DIMENSION], int row, int column, int checkRow, int checkColumn, int dimension);
-int RowCheck(char board[][DIMENSION], int row, int checkRow);
-int ColumnCheck(char board[][DIMENSION], int column, int checkColumn);
-int DiagonalCheck(char board[][DIMENSION], int row, int column, int dimension);
-int PlaceQueens(int colorGrid[][DIMENSION], int colorUsed[], char board[][DIMENSION], int dimension, int row, int column);
+void task4_queens_battle();
+int CheckColorPlacement(int colorGrid[][MAX_DIMENSION], int colorUsed[], int row, int column);
+int RowCheck(char board[][MAX_DIMENSION], int row, int checkRow);
+int ColumnCheck(char board[][MAX_DIMENSION], int column, int checkColumn);
+int DiagonalCheck(char board[][MAX_DIMENSION], int row, int column, int dimension);
+int PlaceQueens(int colorGrid[][MAX_DIMENSION], int colorUsed[], char board[][MAX_DIMENSION], int dimension, int row, int column);
 void task5_crossword_generator();
+int CrosswordCheck(char words[][MAX_SLOTS], int slots, struct Crossword check[], int dictionary);
+int WordCheck(char words[][MAX_SLOTS], int slots, struct Crossword check[]);
 
 
 int main()
@@ -53,7 +62,7 @@ int main()
                 scanf("%*s");
                 break;
             case 4:
-                task4_queens_battle(DIMENSION);
+                task4_queens_battle();
                 break;
             case 5:
                 task5_crossword_generator();
@@ -148,7 +157,7 @@ int ParenthesisValidationInput() {
     scanf("%c", &validation);
     if (validation == '\n') // base case, if enter pressed then return 0, recursion ends
         return 0;
-    if (ParenthesisValidation(validation)) //if the brackets are closedd correctly returns 0
+    if (ParenthesisValidation(validation)) //if the brackets are closed correctly returns 0
         return 0;
     if (!ParenthesisValidation(validation)) //if not returns 1
         return 1;
@@ -182,22 +191,21 @@ int ParenthesisValidation(char validation) { //function to check brackets
     }
 }
 
-void task4_queens_battle(int size)
+void task4_queens_battle()
 {
     int dimension;
     printf("Please enter the board dimensions:\n");
     scanf("%d", &dimension);
-    char colorBoard[size][size]; //user enters board colors as letters
-    int colorGrid[size][size];
-   /// int queenPlacement[size][2];
-    int colorUsed[size];
-    char board[size][size];
+    char colorBoard[MAX_DIMENSION][MAX_DIMENSION]; //user enters board colors as letters
+    int colorGrid[MAX_DIMENSION][MAX_DIMENSION];
+    int colorUsed[MAX_DIMENSION];
+    char board[MAX_DIMENSION][MAX_DIMENSION];
     printf("Please enter the %d*%d puzzle board\n", dimension, dimension);
     scanf("%*c");
     for (int i = 0; i < dimension; i++) {
         for (int j = 0; j < dimension; j++){
             scanf(" %c", &colorBoard[i][j]);
-            colorGrid[i][j] = colorBoard[i][j];
+            colorGrid[i][j] = colorBoard[i][j]; //implicit casting probably not a great choice but i was out of ideas and in hysterics
             //if (colors new)
             //colors.push color
             colorUsed[i] = 0;
@@ -216,50 +224,33 @@ void task4_queens_battle(int size)
         printf("This puzzle cannot be solved.\n");
 }
 
-int CheckColorPlacement(int colorGrid[][DIMENSION], int colorUsed[], int row, int column) { //getting the color of the current cell
+int CheckColorPlacement(int colorGrid[][MAX_DIMENSION], int colorUsed[], int row, int column) { //getting the color of the current cell
     int color = 0;
     color = colorGrid[row][column] - 'A';
+    if (color < 0) //checking if it's lowercase letters
+        color = colorGrid[row][column] - 'a';
     if (colorUsed[color] == 1)
         return 1;
     return 0;
 }
 
-// int QueenPlacementCheck(char board[][DIMENSION], int row, int column, int checkRow, int checkColumn, int dimension){
-//     if (checkRow >= dimension)
-//         return 0;
-//     if (checkRow == row && checkColumn == column) {
-//         if (checkColumn + 1 < dimension)
-//             return QueenPlacementCheck(board, row, column, checkRow, checkColumn + 1, dimension);
-//         return QueenPlacementCheck(board, row, column, checkRow + 1, 0, dimension);
-//     }
-//     if (checkColumn == column && board[checkRow][column] == 'X')
-//         return 1;
-//     if (checkRow == row && board[checkRow][column] == 'X')
-//         return 1;
-//     if ((row - checkRow <= 1 && column - checkColumn <= 1) && board[checkRow][checkColumn] == 'X')
-//         return 1;
-//     if (checkColumn + 1 < dimension)
-//         return QueenPlacementCheck(board, row, column, checkRow, checkColumn + 1, dimension);
-//     return QueenPlacementCheck(board, row, column, checkRow + 1, 0, dimension);
-// }
-
-int RowCheck(char board[][DIMENSION], int row, int checkRow) {
-    if (checkRow < 0)
+int RowCheck(char board[][MAX_DIMENSION], int row, int checkRow) {
+    if (checkRow < 0) //base case for recursion if and actually checkrow is a column
         return 0;
     if (board[row][checkRow] == 'X')
         return 1;
-    return RowCheck(board, row, checkRow - 1);
+    return RowCheck(board, row, checkRow - 1); //if queen.not.found then next column till it's found
 }
 
-int ColumnCheck(char board[][DIMENSION], int column, int checkColumn) {
-    if (checkColumn < 0)
+int ColumnCheck(char board[][MAX_DIMENSION], int column, int checkColumn) {
+    if (checkColumn < 0) //base case for checking column and checkcolumn is a row
         return 0;
     if (board[checkColumn][column] == 'X')
         return 1;
-    return ColumnCheck(board, column, checkColumn - 1);
+    return ColumnCheck(board, column, checkColumn - 1); //if queen.not.found then next row till it's found
 }
 
-int DiagonalCheck(char board[][DIMENSION], int row, int column, int dimension) {
+int DiagonalCheck(char board[][MAX_DIMENSION], int row, int column, int dimension) { //just checking a diagonal near
     if (row > 0 && column > 0 && board[row - 1][column - 1] == 'X')
         return 1;
     if (row > 0 && column < dimension  && board[row - 1][column + 1] == 'X')
@@ -271,18 +262,22 @@ int DiagonalCheck(char board[][DIMENSION], int row, int column, int dimension) {
     return 0;
 }
 
-int PlaceQueens(int colorGrid[][DIMENSION], int colorUsed[], char board[][DIMENSION], int dimension, int row, int column) {
+int PlaceQueens(int colorGrid[][MAX_DIMENSION], int colorUsed[], char board[][MAX_DIMENSION], int dimension, int row, int column) {
+    int color = 0;
     if (row == dimension) //base case
         return 1;
     if (column == dimension) //also base case
         return 0;
-    if (!CheckColorPlacement(colorGrid, colorUsed, row, column) && !RowCheck(board, row, dimension)
+    if (!CheckColorPlacement(colorGrid, colorUsed, row, column) && !RowCheck(board, row, dimension) // if all check functions return 0 then let's gooooooo
         && !ColumnCheck(board, column, dimension) && !DiagonalCheck(board, row, column, dimension)) {
-        colorUsed[colorGrid[row][column] - 'A'] = 1;
+        color = colorGrid[row][column] - 'A';
+        if (color < 0) // also checking if it's lowercase letters
+            color = colorGrid[row][column] - 'a';
+        colorUsed[color] = 1;
         board[row][column] = 'X';
         if (PlaceQueens(colorGrid, colorUsed, board, dimension, row + 1, 0)) //backtraking
             return 1;
-        colorUsed[colorGrid[row][column] - 'A'] = 0;
+        colorUsed[color] = 0;
         board[row][column] = '*';
     }
     return PlaceQueens(colorGrid, colorUsed, board, dimension, row, column + 1);
@@ -292,5 +287,43 @@ int PlaceQueens(int colorGrid[][DIMENSION], int colorUsed[], char board[][DIMENS
 
 void task5_crossword_generator()
 {
-    // Todo
+    int dimension;
+    int slots;
+    struct Crossword crossword[MAX_SLOTS];
+    int dictionary;
+    char words[MAX_LENGTH][MAX_SLOTS];
+    printf("Please enter the dimensions of the crossword grid:\n");
+    scanf("%d", &dimension);
+    printf("Please enter the number of slots in the crossword:\n");
+    scanf("%d", &slots);
+    printf("Please enter the details for each slot (Row, Column, Length, Direction):\n");
+    for (int i = 0; i < slots; i++)
+    {
+        scanf("%d", &crossword[i].row);
+        scanf("%d", &crossword[i].column);
+        scanf("%d", &crossword[i].length);
+        scanf(" %c", &crossword[i].direction);
+    }
+    printf("Please enter the number of words in the dictionary:\n");
+    scanf("%d", &dictionary);
+    while (dictionary < slots) {
+        printf("The dictionary must contain at least %d words.  Please enter a valid dictionary size: \n", slots);
+        scanf("%d", &dictionary);
+    }
+    printf("Please enter the words for the dictionary:\n");
+    for (int i = 0; i < slots; i++) {
+        scanf(" %s", words[i]);
+    }
+}
+
+int CrosswordCheck(char words[][MAX_SLOTS], int slots, struct Crossword check[], int dictionary) {
+    if (dictionary == slots) //base case
+        return 0;
+    //if check word true the filling next
+    //if next word doesn't wor the backtracking (!)
+    //kill me please
+}
+
+int WordCheck(char words[][MAX_SLOTS], int slots, struct Crossword check[]) {
+
 }
