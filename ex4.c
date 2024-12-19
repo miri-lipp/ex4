@@ -1,7 +1,7 @@
 /******************
 Name:
 ID:
-Assignment:
+Assignment: ex4
 *******************/
 #include <stdio.h>
 #include <string.h>
@@ -31,7 +31,8 @@ int DiagonalCheck(char board[][MAX_DIMENSION], int row, int column, int dimensio
 int PlaceQueens(int colorGrid[][MAX_DIMENSION], int colorUsed[], char board[][MAX_DIMENSION], int dimension, int row, int column);
 void task5_crossword_generator();
 int CrosswordCheck(char words[][MAX_SLOTS], int slots, struct Crossword check[], int dictionary);
-int WordCheck(char words[][MAX_SLOTS], int slots, struct Crossword check[]);
+int WordCheck(char words[][MAX_SLOTS], struct Crossword check[], int dictionary, int slots);
+int CheckIntersection(int slots, struct Crossword check[], int dimension);
 
 
 int main()
@@ -320,10 +321,28 @@ int CrosswordCheck(char words[][MAX_SLOTS], int slots, struct Crossword check[],
     if (dictionary == slots) //base case
         return 0;
     //if check word true the filling next
-    //if next word doesn't wor the backtracking (!)
+    //if next word doesn't work the backtracking (!)
     //kill me please
 }
 
-int WordCheck(char words[][MAX_SLOTS], int slots, struct Crossword check[]) {
+int WordCheck(char words[][MAX_SLOTS], struct Crossword check[], int dictionary, int slots) {
+    //check if the word applies ti it's place in struct
+    //if not the next word
+    if (dictionary == 0)
+        return 1;
+    if (strlen(words[dictionary]) == check[slots].length)
+        return 0;
+    return WordCheck(words, check, dictionary - 1, slots); //checks every word for one slot, slay queen
+}
+
+int CheckIntersection(int slots, struct Crossword check[], int dimension) {
+    int column[];
+    if (check[slots].row == dimension) //needs to return to me intersection coordinates (FUCKING HOW)
+        return 1;
+    if (check[slots].row && check[slots].direction == 'V')
+        column[slots] = check[slots].column;
+    if (check[slots].row && check[slots].direction == 'H')
+        if (check[slots].row + check[slots].length >= column[slots])
+            return
 
 }
