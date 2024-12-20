@@ -10,6 +10,7 @@ Assignment: ex4
 #define COLUMN 5
 #define MAX_SLOTS 100
 #define MAX_LENGTH 15
+#define MAX_GRID_SIZE 30
 struct Crossword {
     int row;
     int column;
@@ -32,7 +33,7 @@ int PlaceQueens(int colorGrid[][MAX_DIMENSION], int colorUsed[], char board[][MA
 void task5_crossword_generator();
 int CrosswordCheck(char words[][MAX_SLOTS], int slots, struct Crossword check[], int dictionary);
 int WordCheck(char words[][MAX_SLOTS], struct Crossword check[], int dictionary, int slots);
-int CheckIntersection(int slots, struct Crossword check[], int dimension);
+
 
 
 int main()
@@ -293,6 +294,7 @@ void task5_crossword_generator()
     struct Crossword crossword[MAX_SLOTS];
     int dictionary;
     char words[MAX_LENGTH][MAX_SLOTS];
+    char board[MAX_GRID_SIZE][MAX_GRID_SIZE];
     printf("Please enter the dimensions of the crossword grid:\n");
     scanf("%d", &dimension);
     printf("Please enter the number of slots in the crossword:\n");
@@ -315,14 +317,35 @@ void task5_crossword_generator()
     for (int i = 0; i < slots; i++) {
         scanf(" %s", words[i]);
     }
+    for (int i = 0; i < dimension; i++) {
+        for (int j = 0; j < dimension; j++) {
+            board[i][j] = '#'; //initialized the board
+        }
+    }
+    if (CrosswordCheck(words, slots, crossword, dictionary)) {
+        for (int i = 0; i < dimension; i++) {
+            for (int j = 0; j < dimension; j++) {
+                printf("| %c |", board[i][j]);
+            }
+            printf("\n");
+        }
+    }
+    else
+        printf("This crossword cannot be solved.\n");
 }
 
 int CrosswordCheck(char words[][MAX_SLOTS], int slots, struct Crossword check[], int dictionary) {
-    if (dictionary == slots) //base case
-        return 0;
+    if (dictionary < 0) //base case
+        return 1;
+    if (WordCheck(words, check, dictionary, slots)) {
+        slots--;
+        return  CrosswordCheck(words, slots, check, dictionary - 1);
+    }
     //if check word true the filling next
     //if next word doesn't work the backtracking (!)
     //kill me please
+    slots++;
+    return CrosswordCheck(words, slots, check, dictionary - 1);
 }
 
 int WordCheck(char words[][MAX_SLOTS], struct Crossword check[], int dictionary, int slots) {
@@ -333,16 +356,4 @@ int WordCheck(char words[][MAX_SLOTS], struct Crossword check[], int dictionary,
     if (strlen(words[dictionary]) == check[slots].length)
         return 0;
     return WordCheck(words, check, dictionary - 1, slots); //checks every word for one slot, slay queen
-}
-
-int CheckIntersection(int slots, struct Crossword check[], int dimension) {
-    int column[];
-    if (check[slots].row == dimension) //needs to return to me intersection coordinates (FUCKING HOW)
-        return 1;
-    if (check[slots].row && check[slots].direction == 'V')
-        column[slots] = check[slots].column;
-    if (check[slots].row && check[slots].direction == 'H')
-        if (check[slots].row + check[slots].length >= column[slots])
-            return
-
 }
