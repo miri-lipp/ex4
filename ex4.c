@@ -325,7 +325,7 @@ void task5_crossword_generator()
             board[i][j] = '#'; //initialized the board
         }
     }
-    if (PlaceWords(words, crossword, slots, 0, 0, dictionary, board)) {
+    if (PlaceWords(words, crossword, slots, 0, 0, dictionary - 1, board)) {
         for (int i = 0; i < dimension; i++) {
             for (int j = 0; j < dimension; j++) {
                 printf("| %c |", board[i][j]);
@@ -352,6 +352,7 @@ int WordCheck(char words[][MAX_SLOTS], struct Crossword check[], int dictionary,
     //if not the next word
     if (dictionary < 0)
         return 0;
+    printf("Length of the word is: %d \n", check[slots].length);
     if (strlen(words[dictionary]) == check[slots].length)
         return 1;
     return WordCheck(words, check, dictionary - 1, slots); //checks every word for one slot, slay queen
@@ -365,6 +366,7 @@ int PlaceWords(char words[][MAX_SLOTS], struct Crossword check[], int slots, int
     //if direction is horizontal then place word from row[slots] to strlen(word) and column[slots] to length
     char word[MAX_LENGTH];
     strcpy(word, words[index]); //copying one word from array to send it to function
+    //printf("Passing word: %s\n", word);
     if (WordCheck(words, check, index, slots) &&
         OverlapCheck(word, board, check[slots].row, check[slots].column, check[slots].direction, 0)) {
         // row = check[slots].row + strlen(words[dictionary]); //last value
@@ -392,7 +394,7 @@ void FillBoard(char board[][MAX_GRID_SIZE], int row_index, int column_index, cha
 void ClearBoard(char board[][MAX_GRID_SIZE], int row_index, int column_index, int length, char direction) { //function for backtracking?
     if (length == 0)
         return;
-    board[row_index][column_index] = '#';
+    board[row_index][column_index] = ' ';
     if (direction == 'H') {
         ClearBoard(board, row_index, column_index + 1, length - 1, direction);
     }
