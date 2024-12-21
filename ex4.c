@@ -338,11 +338,14 @@ void task5_crossword_generator()
 int OverlapCheck(char words[],char board[][MAX_GRID_SIZE], int row, int column, char direction, int index){
     if (words[index] == '\0')
         return 1;
-    printf("row index: %d, column index: %d\n", row, column);
-    if (board[row][column] != '#' && board[row][column] != words[index])
+   // printf("row index: %d, column index: %d word: %c, board: %c\n", row, column, words[index], board[row][column]);
+    if (board[row][column] != '#' && board[row][column] != words[index]) {
+        printf("conflict at row index: %d, column index: %d word: %c, board: %c\n", row, column, words[index], board[row][column]);
         return 0;
+    }
     if (direction == 'H')
         return OverlapCheck(words, board, row, column + 1, direction, index + 1);
+
     return OverlapCheck(words, board, row + 1, column, direction, index + 1);
 }
 
@@ -371,23 +374,22 @@ int PlaceWords(char words[][MAX_SLOTS], struct Crossword check[], int slots, int
         FillBoard(board, check[slots].row, check[slots].column, word, 0 ,check[slots].direction);
         if (PlaceWords(words, check, slots - 1, row, column, index - 1, board))
             return 1;
+        slots++;
+        ClearBoard(board, check[slots].row, check[slots].column, check[slots].length, check[slots].direction);
     }
     //backtracking
-    ClearBoard(board, check[slots].row, check[slots].column, check[slots].length, check[slots].direction);
     return PlaceWords(words, check, slots - 1, row, column, index - 1, board);
 }
 
 void FillBoard(char board[][MAX_GRID_SIZE], int row_index, int column_index, char words[], int index, char direction) {
     if (words[index] == '\0')
         return;
-    strcpy(board[column_index], words);
-   // printf("row index: %d, column index: %d\n", row_index, column_index);
+    board[row_index][column_index] = words[index];
+    printf("row index: %d, column index: %d\n", row_index, column_index);
     if (direction == 'H') {
-        strcpy(board[column_index], words);
         FillBoard(board, row_index, column_index + 1, words, index + 1, direction);
     }
     else {
-        strcpy(board[row_index], words);
         FillBoard(board, row_index + 1, column_index, words, index + 1, direction);
     }
 }
@@ -395,7 +397,7 @@ void FillBoard(char board[][MAX_GRID_SIZE], int row_index, int column_index, cha
 void ClearBoard(char board[][MAX_GRID_SIZE], int row_index, int column_index, int length, char direction) { //function for backtracking?
     if (length == 0)
         return;
-    board[row_index][column_index] = '#';
+    board[row_index][column_index] = ' ';
     if (direction == 'H') {
         ClearBoard(board, row_index, column_index + 1, length - 1, direction);
     }
