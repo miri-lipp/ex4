@@ -167,29 +167,29 @@ int ParenthesisValidationInput(int openRound, int openCurly, int openSquare, int
     switch (validation) { //plus value if opened brackets minus value if closed brackets
         case '<':
             return ParenthesisValidationInput(openRound, openCurly, openSquare, openTriangle + 1);
+        case '(':
+            return ParenthesisValidationInput(openRound + 1, openCurly, openSquare, openTriangle);
+        case '{':
+            return ParenthesisValidationInput(openRound, openCurly + 1, openSquare, openTriangle);
+        case '[':
+            return ParenthesisValidationInput(openRound, openCurly, openSquare + 1, openTriangle);
         case '>': {
-            if (openTriangle <= 0 || openRound > 0 || openCurly > 0 || openSquare > 0)
+            if (openTriangle <= 0)
                 return 1;
             return ParenthesisValidationInput(openRound, openCurly, openSquare, openTriangle - 1);
         }
-        case '(':
-            return ParenthesisValidationInput(openRound + 1, openCurly, openSquare, openTriangle);
         case ')': {
-            if (openRound <= 0 || openCurly > 0 || openSquare > 0 || openTriangle > 0)
+            if (openRound <= 0)
                 return 1;
             return ParenthesisValidationInput(openRound - 1, openCurly, openSquare, openTriangle);
         }
-        case '{':
-            return ParenthesisValidationInput(openRound, openCurly + 1, openSquare, openTriangle);
         case '}': {
-            if (openCurly <= 0 || openSquare > 0 || openTriangle > 0 || openRound > 0)
+            if (openCurly <= 0)
                 return 1;
             return ParenthesisValidationInput(openRound, openCurly - 1, openSquare, openTriangle);
         }
-        case '[':
-            return ParenthesisValidationInput(openRound, openCurly, openSquare + 1, openTriangle);
         case ']': {
-            if (openSquare <= 0 || openCurly > 0 || openTriangle > 0 || openRound > 0)
+            if (openSquare <= 0)
                 return 1;
             return ParenthesisValidationInput(openRound, openCurly, openSquare - 1, openTriangle);
         }
