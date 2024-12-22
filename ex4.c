@@ -22,8 +22,7 @@ int CalculatePath(int column, int row);
 void task2_human_pyramid(int size1, int size2);
 float HumanPyramid(float weight[][COLUMN], int column, int row, int size1, int size2);
 void task3_parenthesis_validator();
-int ParenthesisValidationInput();
-int ParenthesisValidation(char validation);
+int ParenthesisValidationInput(int openRound, int openCurly, int openSquare, int openTriangle);
 void task4_queens_battle();
 int CheckColorPlacement(int colorGrid[][MAX_DIMENSION], int colorUsed[], int row, int column);
 int RowCheck(char board[][MAX_DIMENSION], int row, int checkRow);
@@ -148,50 +147,54 @@ float HumanPyramid(float weight[][COLUMN], int column, int row, int size1, int s
 
 void task3_parenthesis_validator()
 {
+    int openRound = 0, openCurly = 0, openSquare = 0, openTriangle = 0;
     printf("Please enter a term for validation:\n");
     scanf("%*c");
-    if (ParenthesisValidationInput())
+    if (!ParenthesisValidationInput(openRound, openCurly, openSquare, openTriangle))
         printf("The parentheses are balanced correctly.\n");
     else
         printf("The parentheses are not balanced correctly.\n");
 }
 
-int ParenthesisValidationInput() {
+int ParenthesisValidationInput(int openRound, int openCurly, int openSquare, int openTriangle) {
     char validation;
     scanf("%c", &validation);
-    if (validation == '\n') // base case, if enter pressed then return 0, recursion ends
-        return 0;
-    if (ParenthesisValidation(validation)) //if the brackets are closed correctly returns 0
-        return 0;
-    if (!ParenthesisValidation(validation)) //if not returns 1
+    if (validation == '\n') {// base case, if enter pressed then return 0, recursion ends
+        if (openCurly == 0 && openSquare == 0 && openTriangle == 0 && openRound == 0)
+            return 0; //balanced if everywhere is 0
         return 1;
-    ParenthesisValidationInput();
-}
-
-int ParenthesisValidation(char validation) { //function to check brackets
-    switch (validation) {
-        case '<': {
-            return 1;
-            case '>':
-                return 0;
+    }
+    switch (validation) { //plus value if opened brackets minus value if closed brackets
+        case '<':
+            return ParenthesisValidationInput(openRound, openCurly, openSquare, openTriangle + 1);
+        case '>': {
+            if (openTriangle <= 0 || openRound > 0 || openCurly > 0 || openSquare > 0)
+                return 1;
+            return ParenthesisValidationInput(openRound, openCurly, openSquare, openTriangle - 1);
         }
-        case '[': {
-            return 1;
-            case ']':
-                return 0;
+        case '(':
+            return ParenthesisValidationInput(openRound + 1, openCurly, openSquare, openTriangle);
+        case ')': {
+            if (openRound <= 0 || openCurly > 0 || openSquare > 0 || openTriangle > 0)
+                return 1;
+            return ParenthesisValidationInput(openRound - 1, openCurly, openSquare, openTriangle);
         }
-        case '{': {
-            return 1;
-            case '}':
-                return 0;
+        case '{':
+            return ParenthesisValidationInput(openRound, openCurly + 1, openSquare, openTriangle);
+        case '}': {
+            if (openCurly <= 0 || openSquare > 0 || openTriangle > 0 || openRound > 0)
+                return 1;
+            return ParenthesisValidationInput(openRound, openCurly - 1, openSquare, openTriangle);
         }
-        case '(': {
-            return 1;
-            case ')':
-                return 0;
+        case '[':
+            return ParenthesisValidationInput(openRound, openCurly, openSquare + 1, openTriangle);
+        case ']': {
+            if (openSquare <= 0 || openCurly > 0 || openTriangle > 0 || openRound > 0)
+                return 1;
+            return ParenthesisValidationInput(openRound, openCurly, openSquare - 1, openTriangle);
         }
-        default:
-            return 0;
+        default: //default case, other characters
+            return ParenthesisValidationInput(openRound, openCurly, openSquare, openTriangle);
     }
 }
 
