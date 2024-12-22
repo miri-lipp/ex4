@@ -336,17 +336,17 @@ void task5_crossword_generator()
 }
 
 int OverlapCheck(char words[],char board[][MAX_GRID_SIZE], int row, int column, char direction, int index){
-    if (words[index] == '\0')
+    if (words[index] == '\0') //base case is the word is ended
         return 1;
    // printf("row index: %d, column index: %d word: %c, board: %c\n", row, column, words[index], board[row][column]);
     if (board[row][column] != '#' && board[row][column] != words[index]) {
         //printf("conflict at row index: %d, column index: %d word: %c, board: %c\n", row, column, words[index], board[row][column]);
         return 0;
     }
-    if (direction == 'H')
+    if (direction == 'H') //if horizontal then returns next character and next column
         return OverlapCheck(words, board, row, column + 1, direction, index + 1);
 
-    return OverlapCheck(words, board, row + 1, column, direction, index + 1);
+    return OverlapCheck(words, board, row + 1, column, direction, index + 1); //if vertical next character and row
 }
 
 int PlaceWords(char words[][MAX_SLOTS], struct Crossword check[], int slots, int row, int column, int index, char board[][MAX_GRID_SIZE], int used[], int dictionary) {
@@ -357,13 +357,12 @@ int PlaceWords(char words[][MAX_SLOTS], struct Crossword check[], int slots, int
     //if direction is horizontal then place word from row[slots] to strlen(word) and column[slots] to length
     char word[MAX_LENGTH];
     strcpy(word, words[index]); //copying one word from array to send it to function
-    printf("Checking word: %s with length %llu against required length %d\n", words[index], strlen(words[index]), check[slots].length);
-
-    if (!used[index] && strlen(word) == check[slots].length &&
+  //  printf("Checking word: %s with length %llu against required length %d\n", words[index], strlen(words[index]), check[slots].length);
+    if (!used[index] && strlen(word) == check[slots].length && //checks if the word is used already and if the length of the word fits
         OverlapCheck(word, board, check[slots].row, check[slots].column, check[slots].direction, 0)) {
         FillBoard(board, check[slots].row, check[slots].column, word, 0 ,check[slots].direction);
-        used[index] = 1;
-        if (PlaceWords(words, check, slots - 1, row, column, dictionary, board, used, dictionary))
+        used[index] = 1; //puts that the word is used
+        if (PlaceWords(words, check, slots - 1, row, column, dictionary, board, used, dictionary)) //next slot
             return 1;
         ClearBoard(board, check[slots].row, check[slots].column, check[slots].length, check[slots].direction);
         used[index] = 0;
@@ -371,31 +370,29 @@ int PlaceWords(char words[][MAX_SLOTS], struct Crossword check[], int slots, int
     //backtracking
     // if (PlaceWords(words, check, slots, row, column, index - 1, board, used, dictionary))
     //     return 1;
-    return PlaceWords(words, check, slots, row, column, index - 1, board, used, dictionary);
+    return PlaceWords(words, check, slots, row, column, index - 1, board, used, dictionary); //next word
 }
 
 void FillBoard(char board[][MAX_GRID_SIZE], int row_index, int column_index, char words[], int index, char direction) {
-    if (words[index] == '\0')
-        return;
+    if (words[index] == '\0') //function for filling the board with words
+        return; ///base case if the word ended
     board[row_index][column_index] = words[index];
-    //printf("row index: %d, column index: %d\n", row_index, column_index);
-    if (direction == 'H') {
+    if (direction == 'H') { //if horizontal returns next character in string and next column
         FillBoard(board, row_index, column_index + 1, words, index + 1, direction);
     }
-    else {
+    else { //if vertical next character and next row
         FillBoard(board, row_index + 1, column_index, words, index + 1, direction);
     }
 }
 
-void ClearBoard(char board[][MAX_GRID_SIZE], int row_index, int column_index, int length, char direction) { //function for backtracking?
-    if (length == 0)
+void ClearBoard(char board[][MAX_GRID_SIZE], int row_index, int column_index, int length, char direction) { //function for backtracking
+    if (length == 0) //base case if length of word 0 then word is deleted
         return;
-    board[row_index][column_index] = '#';
-    //printf("row index: %d, column index: %d, length: %d\n", row_index, column_index, length);
-    if (direction == 'H') {
+    board[row_index][column_index] = '#';  //deletes words
+    if (direction == 'H') { //if horizontal then next column and minus length
         ClearBoard(board, row_index, column_index + 1, length - 1, direction);
     }
-    else {
+    else { // if vertical then next row and minus length
         ClearBoard(board, row_index + 1, column_index, length - 1, direction);
     }
 }
