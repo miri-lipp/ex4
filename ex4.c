@@ -62,6 +62,7 @@ int main()
                 break;
             case 3:
                 task3_parenthesis_validator();
+                printf("\n");
                 break;
             case 4:
                 task4_queens_battle();
@@ -189,7 +190,7 @@ int ParenthesisValidationInput(char expected) {
         case '}':
         case ']':
             if (validation != expected) { // not found the expected closing brackets
-                scanf("%*c"); //i tried many things like %*s and [^/n] and so on nothing worked except this one
+                scanf("%*s"); //i tried many things like %*c and [^/n] and so on nothing worked except this one and still in one of the instances it doesn't react to enter and i have no idea what to do
                 return 1;
             }
             return 0;
