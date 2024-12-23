@@ -62,7 +62,7 @@ int main()
                 break;
             case 3:
                 task3_parenthesis_validator();
-                scanf("%*s");
+                //scanf("%*s");
                 break;
             case 4:
                 task4_queens_battle();
@@ -128,6 +128,9 @@ void task2_human_pyramid(int size1, int size2)
     for (int i = 0; i < size1; i++) {
         for (int j = 0; j <= i; j++) {
             result = HumanPyramid(weight, j, i, size1, size2);
+            result *= 100;
+            result = (int)(result + 0.5);
+            result /= 100; //rounding fucking up
             printf("%.2f ", result);
         }
         printf("\n");
@@ -191,8 +194,7 @@ int ParenthesisValidationInput(char expected) {
             return 0;
 
         default: //default case, other characters
-            if (ParenthesisValidationInput(expected))
-                return 1;
+            return ParenthesisValidationInput(expected);
     }
     return ParenthesisValidationInput(expected); //continue recursion
 }
@@ -206,7 +208,7 @@ void task4_queens_battle()
     int colorGrid[MAX_DIMENSION][MAX_DIMENSION];
     int colorUsed[MAX_DIMENSION];
     char board[MAX_DIMENSION][MAX_DIMENSION];
-    printf("Please enter the %d*%d puzzle board\n", dimension, dimension);
+    printf("Please enter a %d*%d puzzle board\n", dimension, dimension);
     scanf("%*c");
     for (int i = 0; i < dimension; i++) {
         for (int j = 0; j < dimension; j++){
