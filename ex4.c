@@ -1,6 +1,6 @@
 /******************
-Name:
-ID:
+Name: Miriam Lipkovich
+ID: 336239652
 Assignment: ex4
 *******************/
 #include <stdio.h>
@@ -361,7 +361,7 @@ int PlaceWords(char words[][MAX_SLOTS], struct Crossword check[], int slots, int
     char word[MAX_LENGTH];
     strcpy(word, words[index]); //copying one word from array to send it to function
   //  printf("Checking word: %s with length %llu against required length %d\n", words[index], strlen(words[index]), check[slots].length);
-    if (!used[index] && strlen(word) == check[slots].length && //checks if the word is used already and if the length of the word fits
+    if (!used[index] && (int)strlen(word) == check[slots].length && //checks if the word is used already and if the length of the word fits
         OverlapCheck(word, board, check[slots].row, check[slots].column, check[slots].direction, 0)) {
         FillBoard(board, check[slots].row, check[slots].column, word, 0 ,check[slots].direction);
         used[index] = 1; //puts that the word is used
