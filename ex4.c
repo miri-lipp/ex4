@@ -22,7 +22,7 @@ int CalculatePath(int column, int row);
 void task2_human_pyramid(int size1, int size2);
 float HumanPyramid(float weight[][COLUMN], int column, int row, int size1, int size2);
 void task3_parenthesis_validator();
-int ParenthesisValidationInput(int openRound, int openCurly, int openSquare, int openTriangle);
+int ParenthesisValidationInput(char expected);
 void task4_queens_battle();
 int CheckColorPlacement(int colorGrid[][MAX_DIMENSION], int colorUsed[], int row, int column);
 int RowCheck(char board[][MAX_DIMENSION], int row, int checkRow);
@@ -124,6 +124,7 @@ void task2_human_pyramid(int size1, int size2)
             }
         }
     }
+    printf("The total weight on each cheerleader is:\n");
     for (int i = 0; i < size1; i++) {
         for (int j = 0; j <= i; j++) {
             result = HumanPyramid(weight, j, i, size1, size2);
@@ -138,7 +139,7 @@ float HumanPyramid(float weight[][COLUMN], int column, int row, int size1, int s
     float resultRight = 0;
     if (column == 0 && row == 0) //base case, if there are no cheerleaders above, then returns weight
         return weight[row][column];
-    if (column >= 0 && row < size1 && row > 0)
+    if (column > 0 && row < size1 && row > 0)
         resultLeft =  0.5 * HumanPyramid(weight, column - 1, row - 1, size1, size2); //result of 0.5 weight of row above and column left
     if (column <= row)
         resultRight = 0.5 * HumanPyramid(weight, column, row - 1, size1, size2); // result of 0.5 weight of row above and column right
@@ -147,55 +148,53 @@ float HumanPyramid(float weight[][COLUMN], int column, int row, int size1, int s
 
 void task3_parenthesis_validator()
 {
-    int openRound = 0, openCurly = 0, openSquare = 0, openTriangle = 0;
     printf("Please enter a term for validation:\n");
-    scanf("%*c");
-    if (!ParenthesisValidationInput(openRound, openCurly, openSquare, openTriangle))
+    scanf("%*c"); //this thing is gonna kill me
+    if (!ParenthesisValidationInput(0))
         printf("The parentheses are balanced correctly.\n");
     else
         printf("The parentheses are not balanced correctly.\n");
 }
 
-int ParenthesisValidationInput(int openRound, int openCurly, int openSquare, int openTriangle) {
+int ParenthesisValidationInput(char expected) {
     char validation;
     scanf("%c", &validation);
     if (validation == '\n') {// base case, if enter pressed then return 0, recursion ends
-        if (openCurly == 0 && openSquare == 0 && openTriangle == 0 && openRound == 0)
-            return 0; //balanced if everywhere is 0
+        if (expected == 0) //if no unmached brackets then valid
+            return 0;
         return 1;
     }
-    switch (validation) { //plus value if opened brackets minus value if closed brackets
+    switch (validation) { //checking parentheses
         case '<':
-            return ParenthesisValidationInput(openRound, openCurly, openSquare, openTriangle + 1);
+            if (ParenthesisValidationInput('>'))
+                return 1;
+            break;
         case '(':
-            return ParenthesisValidationInput(openRound + 1, openCurly, openSquare, openTriangle);
+            if (ParenthesisValidationInput(')'))
+                return 1;
+            break;
         case '{':
-            return ParenthesisValidationInput(openRound, openCurly + 1, openSquare, openTriangle);
+            if (ParenthesisValidationInput('}'))
+                return 1;
+            break;
         case '[':
-            return ParenthesisValidationInput(openRound, openCurly, openSquare + 1, openTriangle);
-        case '>': {
-            if (openTriangle <= 0)
+            if (ParenthesisValidationInput(']')) //if recursion found closing brackets
                 return 1;
-            return ParenthesisValidationInput(openRound, openCurly, openSquare, openTriangle - 1);
-        }
-        case ')': {
-            if (openRound <= 0)
+        break;
+        case '>':
+        case ')':
+        case '}':
+        case ']':
+            if (validation != expected) { // not found the expected closing brackets
                 return 1;
-            return ParenthesisValidationInput(openRound - 1, openCurly, openSquare, openTriangle);
-        }
-        case '}': {
-            if (openCurly <= 0)
-                return 1;
-            return ParenthesisValidationInput(openRound, openCurly - 1, openSquare, openTriangle);
-        }
-        case ']': {
-            if (openSquare <= 0)
-                return 1;
-            return ParenthesisValidationInput(openRound, openCurly, openSquare - 1, openTriangle);
-        }
+            }
+            return 0;
+
         default: //default case, other characters
-            return ParenthesisValidationInput(openRound, openCurly, openSquare, openTriangle);
+            if (ParenthesisValidationInput(expected))
+                return 1;
     }
+    return ParenthesisValidationInput(expected); //continue recursion
 }
 
 void task4_queens_battle()
@@ -220,6 +219,7 @@ void task4_queens_battle()
         }
     }
     if (PlaceQueens(colorGrid, colorUsed, board, dimension, 0, 0)) {
+        printf("Solution:\n");
         for (int i = 0; i < dimension; i++) {
             for (int j = 0; j < dimension; j++) {
                 printf("%c ", board[i][j]);
