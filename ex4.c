@@ -1,6 +1,6 @@
 /******************
-Name:
-ID:
+Name: Miriam Lipkovich
+ID: 336239652
 Assignment: ex4
 *******************/
 #include <stdio.h>
