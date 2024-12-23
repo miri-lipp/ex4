@@ -62,7 +62,7 @@ int main()
                 break;
             case 3:
                 task3_parenthesis_validator();
-                //scanf("%*s");
+                //scanf("%*c");
                 break;
             case 4:
                 task4_queens_battle();
@@ -157,6 +157,7 @@ void task3_parenthesis_validator()
         printf("The parentheses are balanced correctly.\n");
     else
         printf("The parentheses are not balanced correctly.\n");
+    //scanf("*%s");
 }
 
 int ParenthesisValidationInput(char expected) {
@@ -208,7 +209,7 @@ void task4_queens_battle()
     int colorGrid[MAX_DIMENSION][MAX_DIMENSION];
     int colorUsed[MAX_DIMENSION];
     char board[MAX_DIMENSION][MAX_DIMENSION];
-    printf("Please enter a %d*%d puzzle board\n", dimension, dimension);
+    printf("Please enter a %d*%d puzzle board:\n", dimension, dimension);
     scanf("%*c");
     for (int i = 0; i < dimension; i++) {
         for (int j = 0; j < dimension; j++){
