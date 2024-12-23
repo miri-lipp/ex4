@@ -30,7 +30,7 @@ int ColumnCheck(char board[][MAX_DIMENSION], int column, int checkColumn);
 int DiagonalCheck(char board[][MAX_DIMENSION], int row, int column, int dimension);
 int PlaceQueens(int colorGrid[][MAX_DIMENSION], int colorUsed[], char board[][MAX_DIMENSION], int dimension, int row, int column);
 void task5_crossword_generator();
-int PlaceWords(char words[][MAX_SLOTS], struct Crossword check[], int slots, int row, int column, int index, char board[][MAX_GRID_SIZE], int used[], int dictionary);
+int PlaceWords(char words[][MAX_SLOTS], struct Crossword check[], int slots_index, int row, int column, int index, char board[][MAX_GRID_SIZE], int used[], int dictionary, int slots);
 int OverlapCheck(char words[],char board[][MAX_GRID_SIZE], int row, int column, char direction, int index);
 void FillBoard(char board[][MAX_GRID_SIZE], int row_index, int column_index, char words[], int index, char direction);
 void ClearBoard(char board[][MAX_GRID_SIZE], int row_index, int column_index, int length, char direction);
@@ -62,7 +62,6 @@ int main()
                 break;
             case 3:
                 task3_parenthesis_validator();
-                //scanf("%*c");
                 break;
             case 4:
                 task4_queens_battle();
@@ -155,9 +154,9 @@ void task3_parenthesis_validator()
     scanf("%*c"); //this thing is gonna kill me
     if (!ParenthesisValidationInput(0))
         printf("The parentheses are balanced correctly.\n");
-    else
+    else {
         printf("The parentheses are not balanced correctly.\n");
-    //scanf("*%s");
+    }
 }
 
 int ParenthesisValidationInput(char expected) {
@@ -190,6 +189,7 @@ int ParenthesisValidationInput(char expected) {
         case '}':
         case ']':
             if (validation != expected) { // not found the expected closing brackets
+                scanf("%*s");
                 return 1;
             }
             return 0;
@@ -329,7 +329,7 @@ void task5_crossword_generator()
             board[i][j] = '#'; //initialized the board
         }
     }
-    if (PlaceWords(words, crossword, slots - 1, 0, 0, dictionary - 1, board, UsedWord, dictionary - 1)) {
+    if (PlaceWords(words, crossword, 0, 0, 0, 0, board, UsedWord, dictionary - 1, slots)) {
         for (int i = 0; i < dimension; i++) {
             for (int j = 0; j < dimension; j++) {
                 printf("| %c ", board[i][j]);
@@ -355,28 +355,28 @@ int OverlapCheck(char words[],char board[][MAX_GRID_SIZE], int row, int column, 
     return OverlapCheck(words, board, row + 1, column, direction, index + 1); //if vertical next character and row
 }
 
-int PlaceWords(char words[][MAX_SLOTS], struct Crossword check[], int slots, int row, int column, int index, char board[][MAX_GRID_SIZE], int used[], int dictionary) {
-    if (index < 0)
+int PlaceWords(char words[][MAX_SLOTS], struct Crossword check[], int slot_index, int row, int column, int index, char board[][MAX_GRID_SIZE], int used[], int dictionary, int slots) {
+    if (index >= dictionary)
         return 0;//no words left
-    if (slots < 0)
+    if (slot_index >= slots)
         return 1;//all slots are filled
     //if direction is horizontal then place word from row[slots] to strlen(word) and column[slots] to length
     char word[MAX_LENGTH];
     strcpy(word, words[index]); //copying one word from array to send it to function
   //  printf("Checking word: %s with length %llu against required length %d\n", words[index], strlen(words[index]), check[slots].length);
-    if (!used[index] && (int)strlen(word) == check[slots].length && //checks if the word is used already and if the length of the word fits
-        OverlapCheck(word, board, check[slots].row, check[slots].column, check[slots].direction, 0)) {
-        FillBoard(board, check[slots].row, check[slots].column, word, 0 ,check[slots].direction);
+    if (!used[index] && (int)strlen(word) == check[slot_index].length && //checks if the word is used already and if the length of the word fits
+        OverlapCheck(word, board, check[slot_index].row, check[slot_index].column, check[slot_index].direction, 0)) {
+        FillBoard(board, check[slot_index].row, check[slot_index].column, word, 0 ,check[slot_index].direction);
         used[index] = 1; //puts that the word is used
-        if (PlaceWords(words, check, slots - 1, row, column, dictionary, board, used, dictionary)) //next slot
+        if (PlaceWords(words, check, slot_index + 1, row, column, 0, board, used, dictionary, slots)) //next slot
             return 1;
-        ClearBoard(board, check[slots].row, check[slots].column, check[slots].length, check[slots].direction);
+        ClearBoard(board, check[slot_index].row, check[slot_index].column, check[slot_index].length, check[slot_index].direction);
         used[index] = 0;
     }
     //backtracking
     // if (PlaceWords(words, check, slots, row, column, index - 1, board, used, dictionary))
     //     return 1;
-    return PlaceWords(words, check, slots, row, column, index - 1, board, used, dictionary); //next word
+    return PlaceWords(words, check, slot_index, row, column, index + 1, board, used, dictionary, slots); //next word
 }
 
 void FillBoard(char board[][MAX_GRID_SIZE], int row_index, int column_index, char words[], int index, char direction) {
